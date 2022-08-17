@@ -10,7 +10,10 @@ type ValidateReturnVal = {
 
 export async function getDuration(inputPath: string) {
     const execa = (await eval(`import("execa")`)).execa as typeof import("execa")["execa"]
-    const res = await execa("ffprobe", ["-i", inputPath, "-show_format"])
+    const res = await execa("ffprobe", ["-i", inputPath, "-show_format"]).catch(e => {
+      console.error("FFprobe failed", e)
+      return null
+    })
     const numberRes = res
         ?.stdout
         ?.split("\n")
