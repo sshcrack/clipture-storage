@@ -34,8 +34,8 @@ export class Validator {
     }
 
     static setVars(min: number, max: number) {
-        if(max > min)
-            throw new Error("Max value cannot be greater than min value.")
+        if(max < min)
+            throw new Error(`Max value (${max}) cannot be smaller than min value ${min}.`)
 
         this.max = max
         this.min = min
