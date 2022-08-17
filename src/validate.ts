@@ -46,7 +46,7 @@ export class Validator {
             console.error("Max", this.max, "or min", this.min, "not set.")
             return {
                 valid: false,
-                reason: "Validator has not been intialized."
+                reason: "Validator has not been initialized."
             }
         }
 
@@ -69,7 +69,7 @@ export class Validator {
 
         return {
             valid,
-            reason: "Video is too short / too long."
+            reason: `Video is too short / too long. (Duration: ${duration}s)`
         }
     }
 }
