@@ -9,7 +9,7 @@ type ValidateReturnVal = {
 }
 
 export async function getDuration(inputPath: string) {
-    const execa = (await import("execa")).execa
+    const execa = (await eval(`import("execa")`)).execa as typeof import("execa")["execa"]
     const res = await execa("ffprobe", ["-i", inputPath, "-show_format"])
     const numberRes = res
         .stdout
