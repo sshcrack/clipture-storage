@@ -50,12 +50,13 @@ export class Validator {
             }
         }
 
+        console.log("Parsing file", file)
         const { duration, error } = await getDuration(file)
             .then(e => ({ error: null, duration: e }))
             .catch(err => ({ error: err, duration: null }))
 
-        if (error || !duration) {
-            console.error(error)
+        if (error || typeof duration === "undefined" || duration === null) {
+            console.error("Error is", error)
             return {
                 reason: "Invalid video",
                 valid: false
