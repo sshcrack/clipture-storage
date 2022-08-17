@@ -12,7 +12,7 @@ export async function getDuration(inputPath: string) {
     const execa = (await eval(`import("execa")`)).execa as typeof import("execa")["execa"]
     const res = await execa("ffprobe", ["-i", inputPath, "-show_format"])
     const numberRes = res
-        .stdout
+        ?.stdout
         ?.split("\n")
         ?.find(e => e.includes("duration"))
         ?.split("=")
