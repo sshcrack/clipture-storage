@@ -19,7 +19,7 @@ export async function getDuration(inputPath: string) {
         ?.split("\n")
         ?.find(e => e.includes("duration"))
         ?.split("=")
-        ?.shift()
+        ?.pop()
 
     if (!numberRes)
         throw new Error(`Could not get duration with ffprobe with clip ${inputPath}`)
