@@ -16,7 +16,7 @@ app.use(helmet({
   crossOriginResourcePolicy: false,
 }))
 
-const getHandler = (req: Request, res: Response) => {
+const getHandler = async (req: Request, res: Response) => {
   const { id } = req.params
   if (!checkSecret(req, res))
     return null
@@ -26,7 +26,7 @@ const getHandler = (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid id" })
 
   const videoPath = path.resolve(path.join(SAVE_DIR, id + ".mp4"))
-  const exists = fsProm.stat(videoPath).then(() => true).catch(() => false)
+  const exists = await fsProm.stat(videoPath).then(() => true).catch(() => false)
   if (!exists)
     return res.status(404).json({ error: "A clip with that id does not exist on this server." })
 
