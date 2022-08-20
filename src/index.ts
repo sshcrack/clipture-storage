@@ -21,16 +21,21 @@ const getHandler = (req: Request, res: Response) => {
   if (!checkSecret(req, res))
     return null
 
-  const videoPath = path.join(SAVE_DIR, id + ".mp4")
+  const regex = /^[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g
+  if (!regex.test(id))
+    return res.status(400).json({ error: "Invalid id" })
+
+  const videoPath = path.resolve(path.join(SAVE_DIR, id + ".mp4"))
   const exists = fsProm.stat(videoPath).then(() => true).catch(() => false)
   if (!exists)
     return res.status(404).json({ error: "A clip with that id does not exist on this server." })
 
-  return res.sendFile(path.resolve(videoPath))
+
+  return res.sendFile(videoPath)
 }
 
-app.get("/get/:id",getHandler)
-app.get("/api/clip/get/cdn/:server/:id",getHandler)
+app.get("/get/:id", getHandler)
+app.get("/api/clip/get/cdn/:server/:id", getHandler)
 
 app.get("/info", async (req, res) => {
   console.log("Checking secret...")
