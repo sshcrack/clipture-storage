@@ -51,6 +51,19 @@ app.get("/info", async (req, res) => {
   return res.json({ sizeLeft })
 })
 
+app.get("/delete", async (req, res) => {
+  if (!checkSecret(req, res))
+    return
+
+  const id = req.query.id
+  if (typeof id !== "string")
+    return res.status(400).json({ error: "Id has to be a string" })
+
+  const file = path.join(SAVE_DIR, id + ".mp4")
+  await fsProm.unlink(file)
+  res.json({ success: true })
+})
+
 app.post("/upload", async (req, res) => {
   if (!checkSecret(req, res))
     return
