@@ -2,6 +2,8 @@ import fastFolderSize from "fast-folder-size";
 import { readdir, stat } from "fs/promises";
 import path from "path";
 import os from "os"
+import fs from "fs"
+import crypto from "crypto"
 import { spawn, spawnSync } from "child_process"
 import { promisify } from "util";
 
@@ -23,5 +25,17 @@ export function commandExists(command: string) {
 }
 
 export function commandExistsSync(command: string) {
-    return spawnSync(findCmd, [ command]).status === 0
+    return spawnSync(findCmd, [command]).status === 0
+}
+
+export function getHex(file: string) {
+    return new Promise((resolve, reject) => {
+        let hash = crypto.createHash("sha256").setEncoding('hex');
+        fs.createReadStream(file)
+            .once('error', reject)
+            .pipe(hash)
+            .once('finish', function () {
+                resolve(hash.read());
+            });
+    });
 }

@@ -5,6 +5,7 @@ import helmet from "helmet"
 import path from "path"
 import { checkSecret } from "./check"
 import { PORT, SAVE_DIR } from "./env"
+import { getHex } from './fs'
 import { StorageManager } from "./storage"
 import { Validator } from "./validate"
 
@@ -138,8 +139,10 @@ app.post("/upload", async (req, res) => {
     return res.status(400).json({ error: validateRes.reason })
   }
 
+  const hex = await getHex(file)
+
   StorageManager.addFile(size)
-  return res.json({ uploaded: currSize, success: true })
+  return res.json({ uploaded: currSize, success: true, hex })
 })
 
 app.get("/set", (req, res) => {
