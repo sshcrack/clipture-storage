@@ -62,7 +62,8 @@ app.get("/delete", async (req, res) => {
 
   const file = path.join(SAVE_DIR, id + ".mp4")
   await fsProm.unlink(file)
-  res.json({ success: true })
+    .then(() => res.json({ success: true }))
+    .catch(() => res.status(404).json({ error: "File not found" }))
 })
 
 app.post("/upload", async (req, res) => {
