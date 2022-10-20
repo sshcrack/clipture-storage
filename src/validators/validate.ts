@@ -1,4 +1,4 @@
-import { commandExists } from "./fs"
+import { commandExists } from "../util/fs"
 
 
 type ValidateReturnVal = {

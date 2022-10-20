@@ -1,6 +1,6 @@
 import checkDiskSpace from "check-disk-space"
-import { MAX_SIZE, SAVE_DIR } from "./env"
-import { getFolderSize } from "./fs"
+import { MAX_SIZE, SAVE_DIR } from "./util/env"
+import { getFolderSize } from "./util/fs"
 import fs from "fs"
 
 export class StorageManager {

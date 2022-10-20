@@ -6,6 +6,7 @@ import fs from "fs"
 import crypto from "crypto"
 import { spawn, spawnSync } from "child_process"
 import { promisify } from "util";
+import { SAVE_DIR } from './env';
 
 
 export const getFolderSize = promisify(fastFolderSize)
@@ -38,4 +39,8 @@ export function getHex(file: string) {
                 resolve(hash.read());
             });
     });
+}
+
+export function idToPath(id: string) {
+    return path.resolve(path.join(SAVE_DIR, id + ".mp4"))
 }

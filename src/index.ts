@@ -3,11 +3,12 @@ import fs from "fs"
 import fsProm from "fs/promises"
 import helmet from "helmet"
 import path from "path"
-import { checkSecret } from "./check"
-import { PORT, SAVE_DIR } from "./env"
-import { getHex } from './fs'
 import { StorageManager } from "./storage"
-import { Validator } from "./validate"
+import { PORT, SAVE_DIR } from './util/env'
+import { getHex, idToPath } from './util/fs'
+import { getThumbnail } from './util/thumb'
+import { checkSecret, validateId } from "./validators/check"
+import { Validator } from "./validators/validate"
 
 const app = express()
 
@@ -22,11 +23,10 @@ const getHandler = async (req: Request, res: Response) => {
   if (!checkSecret(req, res))
     return null
 
-  const regex = /^[0-9A-Za-z]{8}-[0-9A-Za-z]{4}-4[0-9A-Za-z]{3}-[89ABab][0-9A-Za-z]{3}-[0-9A-Za-z]{12}$/g
-  if (!regex.test(id))
+  if (!validateId(id))
     return res.status(400).json({ error: "Invalid id" })
 
-  const videoPath = path.resolve(path.join(SAVE_DIR, id + ".mp4"))
+  const videoPath = idToPath(id)
   const exists = await fsProm.stat(videoPath).then(() => true).catch(() => false)
   if (!exists)
     return res.status(404).json({ error: "A clip with that id does not exist on this server." })
@@ -34,6 +34,31 @@ const getHandler = async (req: Request, res: Response) => {
 
   return res.sendFile(videoPath)
 }
+
+app.get("/thumbnail/:id", async (req, res) => {
+  const { id } = req.params
+  if (!checkSecret(req, res))
+    return null
+
+  if (!validateId(id))
+    return res.status(400).json({ error: "Invalid id" })
+
+  const stream = await getThumbnail(id)
+    .catch(() => {
+      res.status(500).json({ error: "Could not generate thumbnail." })
+      return false
+    })
+
+  if (!stream || typeof stream === "boolean")
+    return
+
+
+  stream.pipe(res)
+  await new Promise<void>(resolve => {
+    stream.on("end", () => resolve())
+    stream.on("error", () => resolve())
+  });
+})
 
 app.get("/get/:id", getHandler)
 app.get("/api/clip/get/cdn/:server/:id", getHandler)
